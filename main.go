@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"io"
-    //"io/ioutil"
+    "io/ioutil"
 	"net/http"
 
 	// "os"
@@ -38,20 +38,20 @@ func connectToHost(user, host string) (*ssh.Client, *ssh.Session, error) {
 	// var pass string
 	// fmt.Print("Password: ")
 	// fmt.Scanf("%s\n", &pass)
-    // key, err := ioutil.ReadFile("/home/joe/.ssh/id_rsa")
-	// if err != nil {
-		// log.Fatalf("unable to read private key: %v", err)
-	// }
+    key, err := ioutil.ReadFile("/home/joe/.ssh/id_rsa.sophie")
+	if err != nil {
+		log.Fatalf("unable to read private key: %v", err)
+	}
 
     // // Create the Signer for this private key.
-	// signer, err := ssh.ParsePrivateKey(key)
-	// if err != nil {
-		// log.Fatalf("unable to parse private key: %v", err)
-	// }
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		log.Fatalf("unable to parse private key: %v", err)
+	}
 
 	sshConfig := &ssh.ClientConfig{
 		User: user,
-		Auth: []ssh.AuthMethod{ssh.Password("password")},
+		Auth: []ssh.AuthMethod{ssh.PublicKeys(signer)},
 
 	}
 	sshConfig.HostKeyCallback = ssh.InsecureIgnoreHostKey()
@@ -89,9 +89,9 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 
 	// tty, err := pty.Start(cmd)
 
-	// client, session, err := connectToHost("root", "147.75.74.46:22")
+	//client, session, err := connectToHost("root", "147.75.74.46:22")
 
-	client, session, err := connectToHost("ubnt", "192.168.2.9:22")
+	client, session, err := connectToHost("rivs", "127.0.0.1:40167")
 	if err != nil {
 		l.WithError(err).Error("Unable to start pty/cmd")
 		conn.WriteMessage(websocket.TextMessage, []byte(err.Error()))
